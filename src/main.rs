@@ -1,30 +1,23 @@
-use std::fs;
-use serde::Deserialize;
+// File: src/main.rs
+// Description: Main application entry point. Loads configuration and
+//              assets, then prints them in a human-readable format.
 
-#[derive(Debug, Deserialize)]
-struct Network {
-    environment: String,
-}
+mod config;
+use config::Config;
 
-#[derive(Debug, Deserialize)]
-struct Horizon {
-    url: String,
-}
+fn main() -> Result<(), String> {
+    // Load global config
+    let config = Config::load("Config.toml")?;
 
-#[derive(Debug, Deserialize)]
-struct Config {
-    network: Network,
-    horizon: Horizon,
-}
+    println!("Environment: {}", config.global.environment);
+    println!("Horizon URL: {}", config.global.horizon_url);
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
-    // Read and parse the TOML configuration file
-    let contents = fs::read_to_string("Config.toml")?;
-    let config: Config = toml::from_str(&contents)?;
-
-    // Output the results
-    println!("Environment: {}", config.network.environment);
-    println!("Horizon URL: {}", config.horizon.url);
+    // Load asset list
+    let assets = config.load_assets()?;
+    println!("Assets for {}:", config.global.environment);
+    for asset in assets {
+        println!(" - {}: {} ({})", asset.label, asset.code, asset.issuer);
+    }
 
     Ok(())
 }

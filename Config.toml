@@ -1,6 +1,8 @@
-[network]
-environment = "development"
+[global]
+environment = "public"
+horizon_url = "https://horizon.stellar.org"
 
-[horizon]
-url = "https://horizon-testnet.stellar.org"
+[assets]
+testnet_file = "assets/testnet.toml"
+public_file  = "assets/public.toml"
 
