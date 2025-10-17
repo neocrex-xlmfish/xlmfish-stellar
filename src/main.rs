@@ -1,24 +1,46 @@
-// File: src/main.rs
-// Description: Main application entry point. Loads configuration and
-//              assets, then prints them in a human-readable format.
-
+// ==================== main.rs ====================
 mod config;
+
 use config::Config;
 
-fn main() -> Result<(), String> {
-    // Load global config
-    let config = Config::load("Config.toml")?;
+fn main() {
+    // Load configuration from TOML file
+    let config = match Config::from_file("Config.toml") {
+        Ok(cfg) => cfg,
+        Err(e) => {
+            eprintln!("❌ Failed to load config: {}", e);
+            std::process::exit(1);
+        }
+    };
 
-    println!("Environment: {}", config.global.environment);
-    println!("Horizon URL: {}", config.global.horizon_url);
+    // Print all configurations with assets loaded
+    config.print(true);
 
-    // Load asset list
-    let assets = config.load_assets()?;
-    println!("Assets for {}:", config.global.environment);
-    for asset in assets {
-        println!(" - {}: {} ({})", asset.label, asset.code, asset.issuer);
+    // Example: Work with a specific blockchain
+    if let Some(stellar) = config.get_blockchain("stellar") {
+        println!("⭐ === Working with Stellar ===");
+        println!("🔌 Endpoint: {}", stellar.endpoint);
+        
+        match stellar.load_assets() {
+            Ok(assets) => {
+                println!("✅ Loaded {} assets for Stellar", assets.asset.len());
+                for asset in &assets.asset {
+                    println!("  💎 {} ({}) from {}", 
+                        asset.label, 
+                        asset.code, 
+                        asset.issuer
+                    );
+                }
+            }
+            Err(e) => eprintln!("❌ Failed to load Stellar assets: {}", e),
+        }
     }
 
-    Ok(())
+    // Example: Iterate through all blockchains
+    println!("\n🔄 === Processing All Chains ===");
+    for bc in config.get_all_blockchains() {
+        println!("Processing {} on {} network...", bc.blockchain, bc.network);
+        // Add your blockchain-specific logic here
+    }
 }
 

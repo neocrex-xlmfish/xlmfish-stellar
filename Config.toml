@@ -1,13 +1,17 @@
-# Config.toml
-# Minimal configuration per chain
-
-[chains.stellar]
-chain_name = "Stellar"
-api_endpoint = "https://horizon.stellar.org"
+[[blockchain]]
+blockchain = "stellar"
+network = "testnet"
+endpoint = "https://horizon-testnet.stellar.org"
 asset_list = "assets/stellar/testnet.toml"
 
-# [chains.xrp]
-# chain_name = "XRP Ledger"
-# api_endpoint = "https://s1.ripple.com:51234/"
-# asset_list = "assets/xrp/testnet.toml"
+[[blockchain]]
+blockchain = "bitcoin"
+network = "test"
+endpoint = "https://test.xlm.fish"
+asset_list = "assets/bitcoin/test.toml"
 
+[[blockchain]]
+blockchain = "litecoin"
+network = "test"
+endpoint = "https://litecoin.xlm.fish"
+asset_list = "assets/litecoin/test.toml"
